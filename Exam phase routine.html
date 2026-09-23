@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Exam phase routine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --desk:#E1E9E4;
+  --paper:#FAFCFA;
+  --ink:#2A7A57;
+  --ink-strong:#1B5A3F;
+  --ink-soft:#97C8AF;
+  --ink-faint:#E3F0E8;
+  --graphite:#303338;
+  --graphite-2:#5C6168;
+  --fill-hi:#80848B;
+  --fill-lo:#25272B;
+  --highlight:#F5E866;
+  --warn:#A8402C;
+  --shadow:0 1px 0 rgba(27,90,63,.06),0 18px 40px -24px rgba(27,90,63,.45);
+  --cell:18px;
+  --gap:3px;
+  --wk:6px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --desk:#0D1411;--paper:#16201B;--ink:#7CC9A2;--ink-strong:#A9E2C5;--ink-soft:#3D6552;--ink-faint:#1F3028;
+    --graphite:#E3EAE6;--graphite-2:#A3B1AA;--fill-hi:#FFFFFF;--fill-lo:#BCC8C1;--highlight:rgba(245,232,102,.2);--warn:#F29A86;
+    --shadow:0 18px 40px -24px rgba(0,0,0,.7);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0D1411;--paper:#16201B;--ink:#7CC9A2;--ink-strong:#A9E2C5;--ink-soft:#3D6552;--ink-faint:#1F3028;
+  --graphite:#E3EAE6;--graphite-2:#A3B1AA;--fill-hi:#FFFFFF;--fill-lo:#BCC8C1;--highlight:rgba(245,232,102,.2);--warn:#F29A86;
+  --shadow:0 18px 40px -24px rgba(0,0,0,.7);color-scheme:dark;
+}
+@media (min-width:420px){:root{--cell:20px}}
+@media (min-width:900px){:root{--cell:22px;--gap:4px;--wk:10px}}
+
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none !important}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--desk);color:var(--graphite);font-family:"Archivo","Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+
+.wrap{max-width:1040px;margin:0 auto;padding:12px 8px 32px}
+@media (min-width:420px){.wrap{padding:16px 12px 40px}}
+@media (min-width:900px){.wrap{padding:28px 20px 56px}}
+.sheet{background:var(--paper);border:1px solid var(--ink-soft);border-radius:6px;box-shadow:var(--shadow);overflow:clip}
+
+/* Header */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 16px 14px;border-bottom:2px solid var(--ink)}
+.top h1{margin:0;font-stretch:70%;font-weight:800;font-size:clamp(2.1rem,8.5vw,3.1rem);line-height:.92;letter-spacing:-.01em;color:var(--ink-strong);text-wrap:balance}
+.facts{display:flex;flex-wrap:wrap;gap:4px 18px;margin:12px 0 0;padding:0;list-style:none;font-size:.95rem;color:var(--graphite-2)}
+.facts strong{color:var(--graphite);font-weight:650}
+.linkish{background:none;border:0;padding:0;color:var(--ink-strong);font-weight:600;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:pointer}
+.pill{flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink-strong);font-weight:650;font-stretch:87%;cursor:pointer}
+.pill[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
+.pill:focus-visible,.btn:focus-visible,.nav:focus-visible,.linkish:focus-visible{outline:2px solid var(--ink-strong);outline-offset:2px}
+
+/* Settings */
+.settings{padding:16px;border-bottom:2px solid var(--ink);background:color-mix(in srgb,var(--ink-faint) 55%,var(--paper))}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;align-items:end}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--graphite-2)}
+.field input{font-size:1rem;color:var(--graphite);background:var(--paper);border:1.5px solid var(--ink-soft);border-radius:6px;padding:8px 10px;min-height:44px;width:100%}
+.field input:focus-visible{outline:2px solid var(--ink);outline-offset:1px;border-color:var(--ink)}
+.note{margin:10px 0 0;font-size:.9rem;color:var(--graphite-2)}
+.note:empty{display:none}
+.note.warn{display:inline-block;background:var(--highlight);color:var(--graphite);padding:4px 8px;border-radius:3px}
+.sub{margin:20px 0 6px;font-size:1rem;font-weight:700;font-stretch:87%;color:var(--ink-strong)}
+.exam-list{list-style:none;margin:0 0 12px;padding:0}
+.exam-list li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--ink-faint)}
+.exam-list li.empty{color:var(--graphite-2);font-size:.9rem;border-bottom:0}
+.exam-list .en{font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}
+.exam-list .ed{color:var(--graphite-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn{min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink-strong);font-weight:650;cursor:pointer}
+.btn.small{min-height:40px;padding:0 13px;font-size:.88rem;border-color:var(--ink-soft);color:var(--graphite-2)}
+.btn.solid{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.armed{border-color:var(--warn);color:var(--warn)}
+.set-actions{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+
+/* Layout */
+.body{display:block}
+.omr{padding:14px 10px 12px;overflow-x:auto}
+.day{padding:16px 12px 6px;border-top:2px dashed var(--ink-soft)}
+@media (min-width:420px){.day{padding:18px 16px 8px}}
+@media (min-width:900px){
+  .body{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start}
+  .omr{position:sticky;top:env(safe-area-inset-top,0px);padding:24px 22px 18px}
+  .day{border-top:0;border-left:2px dashed var(--ink-soft);padding:22px 26px 12px;min-height:100%}
+}
+
+/* The answer sheet */
+.grid{display:flex;gap:var(--gap);width:max-content;margin:0 auto}
+.col{display:flex;flex-direction:column;align-items:center;width:var(--cell);padding:4px 0 2px;border-radius:999px}
+.lab{width:20px}
+button.day{appearance:none;-webkit-appearance:none;border:0;margin:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.day.wk2{margin-left:var(--wk)}
+@media (hover:hover){button.day:not(.exam):hover{background:var(--ink-faint)}}
+button.day.exam{background:var(--highlight)}
+button.day.sel{box-shadow:inset 0 0 0 1.5px var(--ink-strong)}
+button.day.sel:not(.exam){background:var(--ink-faint)}
+button.day:focus-visible{outline:2px solid var(--ink-strong);outline-offset:2px}
+.dow{height:16px;line-height:16px;font-size:.7rem;font-weight:650;font-stretch:80%;color:var(--ink)}
+.dnum{height:26px;display:flex;align-items:center;justify-content:center}
+.dnum b{display:block;width:var(--cell);height:var(--cell);line-height:var(--cell);border-radius:50%;text-align:center;font-size:.72rem;font-weight:650;font-stretch:80%;font-variant-numeric:tabular-nums;color:var(--graphite)}
+.today .dnum b{background:var(--graphite);color:var(--paper)}
+.cell{height:var(--cell);display:flex;align-items:center;justify-content:center}
+.cell.gap{margin-top:7px}
+.bub{display:block;width:calc(var(--cell) - 6px);height:calc(var(--cell) - 6px);border-radius:50%;border:1.25px solid var(--ink-soft)}
+.bub.m,.exam .bub{border-color:var(--ink)}
+.bub.on{background:radial-gradient(circle at 35% 32%,var(--fill-hi),var(--fill-lo) 70%);border-color:var(--fill-lo)}
+.future .bub:not(.on){opacity:.55}
+.fcell{height:22px;display:flex;align-items:center;justify-content:center;color:var(--ink-strong)}
+.lnum{display:grid;place-items:center;width:calc(var(--cell) - 2px);height:calc(var(--cell) - 2px);font-size:.66rem;font-weight:700;font-stretch:80%;color:var(--ink);font-variant-numeric:tabular-nums}
+.lnum.m{background:var(--ink);color:var(--paper);border-radius:50%}
+.legend{max-width:21rem;margin:12px auto 0;font-size:.8rem;line-height:1.45;color:var(--graphite-2)}
+
+/* Day panel */
+.dhead{display:flex;align-items:center;gap:10px}
+.dhead .dt{flex:1;min-width:0}
+.dhead h2{margin:0;font-stretch:75%;font-weight:750;font-size:1.7rem;line-height:1.05}
+.dline{margin:4px 0 0;font-size:.9rem;color:var(--graphite-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--graphite);color:var(--paper);font-size:.78rem;font-weight:650}
+.nav{flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--ink-soft);background:transparent;color:var(--ink-strong);font-size:1.45rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
+.nav:disabled{opacity:.35;cursor:default}
+.status-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:16px 0 4px}
+.minrow{display:flex;align-items:center;gap:8px;font-size:.95rem}
+.dots{display:flex;gap:4px}
+.dots i{display:block;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--ink)}
+.dots i.on{background:radial-gradient(circle at 35% 32%,var(--fill-hi),var(--fill-lo) 70%);border-color:var(--fill-lo)}
+.allrow{font-size:.95rem;color:var(--graphite-2)}
+.stampline{display:inline-flex;align-items:center;padding:3px 10px;border:2px solid var(--ink);border-radius:5px;color:var(--ink-strong);font-weight:700;font-stretch:87%;transform:rotate(-2deg)}
+.stampline.stamp{animation:stamp .38s cubic-bezier(.2,.9,.3,1.25)}
+@keyframes stamp{from{opacity:0;transform:scale(1.35) rotate(-8deg)}to{opacity:1;transform:rotate(-2deg)}}
+.exam-note{margin:12px 0 2px;padding:10px 12px;background:var(--highlight);border-radius:3px;font-size:.95rem;color:var(--graphite)}
+.exam-note strong{font-weight:700}
+.tipsbar{display:flex;justify-content:flex-end;margin-top:8px}
+
+/* Checklist */
+.grp h3{margin:16px 0 2px;padding-left:4px;font-size:.85rem;font-weight:700;font-stretch:87%;color:var(--ink)}
+.item{position:relative;display:grid;grid-template-columns:24px 28px minmax(0,1fr);column-gap:10px;align-items:start;padding:10px 6px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.item+.item{border-top:1px solid var(--ink-faint)}
+@media (hover:hover){.item:hover{background:var(--ink-faint)}}
+.inum{display:flex;justify-content:flex-end;padding-top:3px}
+.inum b{display:grid;place-items:center;min-width:20px;height:20px;font-size:.8rem;font-weight:700;font-stretch:80%;color:var(--ink);font-variant-numeric:tabular-nums}
+.item.m .inum b{background:var(--ink);color:var(--paper);border-radius:50%}
+.cb{position:absolute;opacity:0;width:1px;height:1px;margin:0;left:40px;top:18px}
+.bub.big{width:26px;height:26px;border-width:1.75px}
+.item.m .bub.big{border-color:var(--ink)}
+.bub.big.on{border-color:var(--fill-lo)}
+.bub.big.pop{animation:fill .24s ease-out}
+@keyframes fill{0%{transform:scale(.5) rotate(-24deg)}70%{transform:scale(1.1)}100%{transform:none}}
+.cb:focus-visible+.bub{outline:2px solid var(--ink-strong);outline-offset:3px}
+.txt{min-width:0}
+.ttl{display:block;font-weight:620;font-size:1.02rem;line-height:1.3;padding-top:2px}
+.mtag{display:inline-block;margin-left:6px;padding:0 7px;border:1px solid var(--ink-soft);border-radius:999px;font-size:.72rem;font-weight:650;color:var(--ink-strong);vertical-align:2px;white-space:nowrap}
+.tip{display:block;margin-top:3px;font-size:.9rem;color:var(--graphite-2)}
+.helps{display:block;margin-top:2px;font-size:.86rem;color:var(--ink-strong)}
+.no-tips .tip,.no-tips .helps{display:none}
+
+/* Footer */
+.foot-note{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 18px;padding:14px 16px 18px;border-top:1px solid var(--ink-faint);font-size:.86rem;color:var(--graphite-2)}
+.foot-note p{margin:0}
+#status.warn{color:var(--warn)}
+
+@media (prefers-reduced-motion:reduce){
+  .bub.big.pop,.stampline.stamp{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="sheet" aria-labelledby="title">
+    <header class="top">
+      <div>
+        <h1 id="title">Exam phase routine</h1>
+        <ul class="facts">
+          <li id="range"></li>
+          <li><strong id="dayof"></strong></li>
+          <li id="mincount"></li>
+          <li id="nextexam"></li>
+        </ul>
+      </div>
+      <button type="button" class="pill" id="setbtn" aria-expanded="false" aria-controls="settings">Settings</button>
+    </header>
+
+    <section id="settings" class="settings" hidden aria-label="Settings">
+      <div class="row">
+        <label class="field"><span>Wake-up time</span><input type="time" id="inwake" step="300"></label>
+        <label class="field"><span>Bedtime</span><input type="time" id="inbed" step="300"></label>
+        <label class="field"><span>First day of the sheet</span><input type="date" id="instart"></label>
+      </div>
+      <p class="note" id="sleepnote"></p>
+      <h3 class="sub">Exams</h3>
+      <ul class="exam-list" id="examlist"></ul>
+      <div class="row">
+        <label class="field"><span>Exam</span><input type="text" id="inexname" maxlength="60" autocomplete="off" placeholder="e.g. Statistics"></label>
+        <label class="field"><span>Date</span><input type="date" id="inexdate"></label>
+        <button type="button" class="btn" id="addexam">Add exam</button>
+      </div>
+      <p class="note" id="exammsg" role="status"></p>
+      <div class="set-actions">
+        <button type="button" class="btn small" id="clearall">Clear all ticks</button>
+        <button type="button" class="btn solid" id="setdone">Done</button>
+      </div>
+    </section>
+
+    <div class="body">
+      <section class="omr" aria-label="Two-week overview">
+        <div class="grid" id="grid"></div>
+        <p class="legend">Numbers match the list. Filled numbers are your exam-week minimum. A tick under a day means you hit it. Highlighted days are exams. Tap a day to open it.</p>
+      </section>
+
+      <section class="day" aria-labelledby="daytitle">
+        <div class="dhead">
+          <button type="button" class="nav" id="prev" aria-label="Previous day">&#8249;</button>
+          <div class="dt">
+            <h2 id="daytitle"></h2>
+            <p class="dline"><span class="tag" id="todaytag" hidden>Today</span><span id="dayidx"></span></p>
+          </div>
+          <button type="button" class="nav" id="next" aria-label="Next day">&#8250;</button>
+        </div>
+        <div class="status-row">
+          <div class="minrow"><span>Minimum</span><span class="dots" id="mindots" aria-hidden="true"></span><strong id="minval"></strong></div>
+          <span class="allrow" id="allval"></span>
+          <span class="stampline" id="stamp" hidden>Minimum done</span>
+        </div>
+        <p class="exam-note" id="examnote" hidden></p>
+        <div class="tipsbar"><button type="button" class="btn small" id="tipsbtn">Hide tips</button></div>
+        <div class="list" id="list"></div>
+      </section>
+    </div>
+
+    <footer class="foot-note">
+      <p>Missed a day? That doesn’t undo the habit. Pick it up again tomorrow.</p>
+      <p id="status" aria-live="polite"></p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const DAYS = 14;
+  const DEF = { start: '2026-09-22', wake: '07:30', bed: '23:30' };
+  const LS_KEY = 'exam-routine-v1';
+  const PREF_TIPS = 'exam-routine-tips';
+  const DAY_MS = 86400000;
+  const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const MO = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const CHECK_SVG = '<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M2.5 8.6l3.4 3.4 7.6-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  const ITEMS = [
+    { id: 'wake', g: 'Morning', min: true,
+      title: s => 'Up at ' + s.wake,
+      tip: 'Same time every day, weekends too. Put the alarm across the room.',
+      helps: 'a steadier body clock, so better sleep, focus and appetite control' },
+    { id: 'water', g: 'Morning', min: true,
+      title: () => 'Glass of water',
+      tip: 'Keep a bottle on the nightstand and drink it before you check your phone.',
+      helps: 'hydration, and an easy first step that starts the routine' },
+    { id: 'light', g: 'Morning',
+      title: () => 'Daylight within 30 minutes',
+      tip: 'Step outside or eat breakfast by a window.',
+      helps: 'shifting a late body clock earlier, and mood' },
+    { id: 'breakfast', g: 'Morning', min: true,
+      title: () => 'Protein breakfast, about 25–30 g',
+      tip: 'Eggs, Greek yogurt with nuts, or cottage cheese. On meds? Eat before they kick in.',
+      helps: 'feeling full for longer and steadier focus until lunch' },
+    { id: 'plan', g: 'Morning',
+      title: () => 'Five-minute plan: top 3 tasks as if-thens',
+      tip: '“If it’s 10:00 at the library, I open past paper 2.” Put the hardest topic in your sharpest hours.',
+      helps: 'getting started instead of stalling' },
+    { id: 'move', g: 'Study',
+      title: () => 'Move for 10–20 minutes before the hardest block',
+      tip: 'Brisk walk, bike or stairs, then start studying straight away.',
+      helps: 'focus and impulse control, strongest right after' },
+    { id: 'blocks', g: 'Study',
+      title: () => 'Timed study blocks, phone in another room',
+      tip: '25–50 minutes on, then walk around during the break.',
+      helps: 'staying on task' },
+    { id: 'meals', g: 'Meals',
+      title: () => 'Lunch and dinner at set times, water first',
+      tip: 'About 500 ml of water 30 minutes before. Eat even if you’re not hungry.',
+      helps: 'eating a bit less, and no skip-then-overeat swings' },
+    { id: 'walk', g: 'Meals', min: true,
+      title: () => '10-minute walk after a meal',
+      tip: 'Go straight after eating, not an hour later.',
+      helps: 'a flatter blood-sugar spike and more daily movement' },
+    { id: 'caffeine', g: 'Afternoon',
+      title: s => 'No caffeine after ' + shift(s.bed, -360),
+      tip: s => 'Earlier is better: ' + shift(s.bed, -480) + ' is ideal.',
+      helps: 'falling asleep on time' },
+    { id: 'workout', g: 'Afternoon',
+      title: () => 'Workout, about 30 minutes',
+      tip: 'Cardio or strength. Right before an evening study block if you can.',
+      helps: 'weight, mood, and a focus boost afterwards' },
+    { id: 'tomorrow', g: 'Evening',
+      title: () => 'Set up tomorrow',
+      tip: 'Clothes out, bag by the door, breakfast and lunch prepped. On meds? Have an evening snack ready.',
+      helps: 'fewer morning decisions and fewer impulse buys' },
+    { id: 'dim', g: 'Evening',
+      title: s => 'Lights dim, phone out of the bedroom by ' + shift(s.bed, -90),
+      tip: 'Warm lamps only. A cheap alarm clock covers the morning.',
+      helps: 'getting sleepy on time' },
+    { id: 'bed', g: 'Evening', min: true,
+      title: s => 'In bed by ' + s.bed,
+      tip: 'Sleep beats late-night cramming.',
+      helps: 'memory, focus and next-day appetite' }
+  ];
+  const MIN_IDS = ITEMS.filter(i => i.min).map(i => i.id);
+  const GAP_BEFORE = new Set(ITEMS.map((it, i) => (i > 0 && it.g !== ITEMS[i - 1].g ? i : -1)).filter(i => i > 0));
+
+  const $ = s => document.querySelector(s);
+  const pad = n => String(n).padStart(2, '0');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const isKey = k => typeof k === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(k);
+  function parseKey(k) { const p = k.split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]); }
+  function keyOf(t) { const d = new Date(t); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+  function todayKey() { const n = new Date(); return n.getFullYear() + '-' + pad(n.getMonth() + 1) + '-' + pad(n.getDate()); }
+  function dayKeys(start) { const s = parseKey(start); return Array.from({ length: DAYS }, (_, i) => keyOf(s + i * DAY_MS)); }
+  function diffDays(a, b) { return Math.round((parseKey(b) - parseKey(a)) / DAY_MS); }
+  function fmtLong(k) { const d = new Date(parseKey(k)); return WD[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MO[d.getUTCMonth()]; }
+  function fmtShort(k) { const d = new Date(parseKey(k)); return WD[d.getUTCDay()].slice(0, 3) + ' ' + d.getUTCDate() + ' ' + MO[d.getUTCMonth()].slice(0, 3); }
+  function fmtDM(k) { const d = new Date(parseKey(k)); return d.getUTCDate() + ' ' + MO[d.getUTCMonth()].slice(0, 3); }
+  function toMin(t) {
+    const m = /^(\d{1,2}):(\d{2})/.exec(t || '');
+    if (!m) return null;
+    const h = +m[1], mi = +m[2];
+    return h > 23 || mi > 59 ? null : h * 60 + mi;
+  }
+  function fromMin(x) { x = ((x % 1440) + 1440) % 1440; return pad(Math.floor(x / 60)) + ':' + pad(x % 60); }
+  function shift(t, delta) { const m = toMin(t); return m == null ? t : fromMin(m + delta); }
+  function uid() { return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  /* ---------- state ---------- */
+  function normalize(raw) {
+    const s = { start: DEF.start, wake: DEF.wake, bed: DEF.bed, exams: [], days: {} };
+    if (!raw || typeof raw !== 'object') return s;
+    if (isKey(raw.start)) s.start = raw.start;
+    if (toMin(raw.wake) != null) s.wake = fromMin(toMin(raw.wake));
+    if (toMin(raw.bed) != null) s.bed = fromMin(toMin(raw.bed));
+    if (Array.isArray(raw.exams)) {
+      s.exams = raw.exams
+        .filter(e => e && typeof e.name === 'string' && e.name.trim() && isKey(e.date))
+        .slice(0, 30)
+        .map(e => ({ id: typeof e.id === 'string' && e.id ? e.id.slice(0, 40) : uid(), name: e.name.trim().slice(0, 60), date: e.date }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    }
+    if (raw.days && typeof raw.days === 'object') {
+      for (const k of Object.keys(raw.days)) {
+        const v = raw.days[k];
+        if (!isKey(k) || !v || typeof v !== 'object') continue;
+        const o = {};
+        for (const it of ITEMS) if (v[it.id] === true) o[it.id] = true;
+        if (Object.keys(o).length) s.days[k] = o;
+      }
+    }
+    return s;
+  }
+  function serialize() {
+    return {
+      v: 1, start: state.start, wake: state.wake, bed: state.bed,
+      exams: state.exams.map(e => ({ id: e.id, name: e.name, date: e.date })),
+      days: JSON.parse(JSON.stringify(state.days))
+    };
+  }
+  function hasContent(s) {
+    return Object.keys(s.days).length > 0 || s.exams.length > 0 || s.wake !== DEF.wake || s.bed !== DEF.bed || s.start !== DEF.start;
+  }
+  function merge(remote, local) {
+    const out = normalize(JSON.parse(JSON.stringify(remote)));
+    for (const k of Object.keys(local.days)) {
+      const d = out.days[k] || (out.days[k] = {});
+      for (const id of Object.keys(local.days[k])) d[id] = true;
+    }
+    const ids = new Set(out.exams.map(e => e.id));
+    for (const e of local.exams) if (!ids.has(e.id)) out.exams.push({ id: e.id, name: e.name, date: e.date });
+    out.exams.sort((a, b) => a.date.localeCompare(b.date));
+    if (out.wake === DEF.wake && out.bed === DEF.bed && out.start === DEF.start) {
+      out.wake = local.wake; out.bed = local.bed; out.start = local.start;
+    }
+    return out;
+  }
+  function minDone(k) {
+    const d = state.days[k];
+    if (!d) return false;
+    return MIN_IDS.every(id => d[id]);
+  }
+
+  let storageOK = true;
+  function readLocal() {
+    let raw = null;
+    try { raw = localStorage.getItem(LS_KEY); } catch (e) { storageOK = false; return null; }
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (e) { return null; }
+  }
+  function writeLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ s: serialize(), u: unsynced })); storageOK = true; }
+    catch (e) { storageOK = false; }
+  }
+  function readPref() { try { const v = localStorage.getItem(PREF_TIPS); return v == null ? true : v === '1'; } catch (e) { return true; } }
+  function writePref(v) { try { localStorage.setItem(PREF_TIPS, v ? '1' : '0'); } catch (e) { /* convenience only */ } }
+
+  const cached = readLocal();
+  let state = normalize(cached && cached.s);
+  let unsynced = !!(cached && cached.u);
+  let carried = unsynced ? normalize(cached.s) : null;
+  let selected = null;
+  let showTips = readPref();
+  let mode = 'starting';
+  let ref = null, unsub = null, firstSnap = false, connectTimer = null;
+  const pendingOps = [];
+  let rev = 0, savedRev = 0, saving = false, saveTimer = null, retries = 0;
+  let justToggled = null, stampCheck = null;
+  let lastToday = todayKey();
+
+  function apply(op) {
+    if (op.t === 'tick') {
+      const d = state.days[op.date] || (state.days[op.date] = {});
+      if (op.v) d[op.id] = true;
+      else { delete d[op.id]; if (!Object.keys(d).length) delete state.days[op.date]; }
+    } else if (op.t === 'set') {
+      for (const k of ['wake', 'bed', 'start']) if (k in op.patch) state[k] = op.patch[k];
+    } else if (op.t === 'examAdd') {
+      state.exams = state.exams.filter(e => e.id !== op.exam.id)
+        .concat([{ id: op.exam.id, name: op.exam.name, date: op.exam.date }])
+        .sort((a, b) => a.date.localeCompare(b.date));
+    } else if (op.t === 'examDel') {
+      state.exams = state.exams.filter(e => e.id !== op.id);
+    } else if (op.t === 'clear') {
+      state.days = {};
+    }
+  }
+  function edit(op) {
+    apply(op);
+    rev++;
+    unsynced = true;
+    if (mode === 'starting') pendingOps.push(op);
+    writeLocal();
+    queueSave();
+    render();
+  }
+
+  /* ---------- saving (per-person, private) ---------- */
+  function setStatus(kind, failed) {
+    const el = $('#status');
+    if (!el) return;
+    const msg = {
+      starting: 'Loading your saved ticks…',
+      saving: 'Saving…',
+      retry: 'Connection hiccup. Trying again…',
+      saved: 'Saved. Syncs to your other devices.',
+      local: failed ? 'Couldn’t reach your account, so ticks are saved on this device for now.' : 'Ticks are saved on this device.',
+      memory: 'Ticks can’t be saved here. They reset when you close this page.'
+    }[kind] || '';
+    el.textContent = msg;
+    el.classList.toggle('warn', kind === 'memory' || (kind === 'local' && !!failed));
+  }
+  function queueSave() {
+    if (mode !== 'db') { if (mode !== 'starting') setStatus(mode); return; }
+    setStatus('saving');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, 350);
+  }
+  function withTimeout(p, ms) {
+    return new Promise((res, rej) => {
+      const t = setTimeout(() => rej({ code: 'timeout' }), ms);
+      p.then(v => { clearTimeout(t); res(v); }, e => { clearTimeout(t); rej(e); });
+    });
+  }
+  async function flush() {
+    saveTimer = null;
+    if (mode !== 'db' || !ref || saving) return;
+    saving = true;
+    const target = rev;
+    try {
+      await withTimeout(ref.set(serialize()), 15000);
+      savedRev = target;
+      retries = 0;
+    } catch (e) {
+      saving = false;
+      const code = e && e.code;
+      if ((code === 'unavailable' || code === 'timeout') && retries < 2) {
+        retries++;
+        setStatus('retry');
+        setTimeout(flush, 700 + Math.random() * 900);
+        return;
+      }
+      toLocal(true);
+      return;
+    }
+    saving = false;
+    if (rev !== savedRev) { flush(); return; }
+    unsynced = false;
+    writeLocal();
+    setStatus('saved');
+  }
+  function toLocal(failed) {
+    clearTimeout(connectTimer);
+    if (unsub) { try { unsub(); } catch (e) { /* already closed */ } unsub = null; }
+    ref = null;
+    mode = storageOK ? 'local' : 'memory';
+    pendingOps.length = 0;
+    setStatus(mode, failed);
+  }
+  function onSnap(snap) {
+    if (!firstSnap) {
+      firstSnap = true;
+      clearTimeout(connectTimer);
+      let needWrite = false;
+      if (snap.exists) {
+        let base = normalize(snap.data());
+        if (carried) { base = merge(base, carried); needWrite = true; }
+        state = base;
+        if (pendingOps.length) { pendingOps.forEach(apply); needWrite = true; }
+      } else {
+        needWrite = unsynced || hasContent(state);
+      }
+      pendingOps.length = 0;
+      carried = null;
+      mode = 'db';
+      writeLocal();
+      render();
+      if (needWrite) { rev++; setStatus('saving'); flush(); }
+      else { savedRev = rev; unsynced = false; writeLocal(); setStatus('saved'); }
+      return;
+    }
+    if (mode !== 'db') return;
+    if (saving || saveTimer || rev !== savedRev) return;
+    if (!snap.exists || (snap.metadata && snap.metadata.hasPendingWrites)) return;
+    state = normalize(snap.data());
+    writeLocal();
+    render();
+  }
+  async function connect() {
+    const c = window.claude;
+    if (!c || typeof c.use !== 'function') { toLocal(false); return; }
+    let db = null, user = null;
+    try { [db, user] = await Promise.all([c.use('db'), c.use('user')]); } catch (e) { /* treat as absent */ }
+    let id = null;
+    if (user && typeof user.id === 'function') { try { id = await user.id(); } catch (e) { id = null; } }
+    if (!db || !id) { toLocal(false); return; }
+    try { ref = db.doc('data/users/' + id + '/exam-routine'); } catch (e) { toLocal(false); return; }
+    connectTimer = setTimeout(() => { if (!firstSnap) toLocal(true); }, 12000);
+    try {
+      unsub = ref.onSnapshot(onSnap, () => { if (mode === 'db' || !firstSnap) toLocal(true); });
+    } catch (e) {
+      toLocal(true);
+    }
+  }
+
+  /* ---------- rendering ---------- */
+  function currentKeys() { return dayKeys(state.start); }
+
+  function render() {
+    const keys = currentKeys();
+    const tk = todayKey();
+    if (!selected || !keys.includes(selected)) {
+      selected = keys.includes(tk) ? tk : (tk < keys[0] ? keys[0] : keys[DAYS - 1]);
+    }
+    const ae = document.activeElement;
+    const focusId = ae && ae.getAttribute ? ae.getAttribute('data-focus-id') : null;
+    renderHeader(keys, tk);
+    renderGrid(keys, tk);
+    renderDay(keys, tk);
+    renderSettings();
+    if (focusId) {
+      const el = document.querySelector('[data-focus-id="' + focusId + '"]');
+      if (el && el !== document.activeElement) el.focus({ preventScroll: true });
+    }
+    justToggled = null;
+    stampCheck = null;
+  }
+
+  function renderHeader(keys, tk) {
+    $('#range').textContent = fmtDM(keys[0]) + ' to ' + fmtDM(keys[DAYS - 1]);
+    const idx = keys.indexOf(tk);
+    $('#dayof').textContent = idx >= 0 ? 'Day ' + (idx + 1) + ' of ' + DAYS
+      : (tk < keys[0] ? 'Starts ' + fmtShort(keys[0]) : 'All 14 days are behind you');
+    const n = keys.filter(minDone).length;
+    $('#mincount').textContent = 'Minimum reached on ' + n + ' of ' + DAYS + ' days';
+    const ne = $('#nextexam');
+    ne.textContent = '';
+    const next = state.exams.find(e => e.date >= tk);
+    if (next) {
+      const dd = diffDays(tk, next.date);
+      const when = dd === 0 ? 'today' : dd === 1 ? 'tomorrow' : 'in ' + dd + ' days';
+      const b = document.createElement('strong');
+      b.textContent = next.name;
+      ne.append('Next exam: ', b, ', ' + when);
+    } else if (state.exams.length) {
+      ne.textContent = 'No more exams on your list';
+    } else {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'linkish';
+      btn.textContent = 'Add your exam dates';
+      btn.addEventListener('click', () => openSettings(true));
+      ne.append(btn);
+    }
+  }
+
+  function renderGrid(keys, tk) {
+    const exams = new Map();
+    for (const e of state.exams) {
+      if (!exams.has(e.date)) exams.set(e.date, []);
+      exams.get(e.date).push(e.name);
+    }
+    let h = '<div class="col lab" aria-hidden="true"><span class="dow"></span><span class="dnum"></span>';
+    ITEMS.forEach((it, i) => {
+      h += '<span class="cell' + (GAP_BEFORE.has(i) ? ' gap' : '') + '"><span class="lnum' + (it.min ? ' m' : '') + '">' + (i + 1) + '</span></span>';
+    });
+    h += '<span class="fcell"></span></div>';
+    keys.forEach((k, di) => {
+      const d = new Date(parseKey(k));
+      const done = state.days[k] || {};
+      const n = ITEMS.filter(it => done[it.id]).length;
+      const md = minDone(k);
+      const ex = exams.get(k);
+      const cls = ['col', 'day'];
+      if (k === selected) cls.push('sel');
+      if (k === tk) cls.push('today');
+      if (ex) cls.push('exam');
+      if (k > tk) cls.push('future');
+      if (di === 7) cls.push('wk2');
+      const label = fmtLong(k) + (k === tk ? ', today' : '') + '. ' + n + ' of ' + ITEMS.length + ' done'
+        + (md ? ', minimum reached' : '') + (ex ? '. Exam: ' + ex.join(' and ') : '');
+      h += '<button type="button" class="' + cls.join(' ') + '" data-day="' + k + '" data-focus-id="day-' + k
+        + '" aria-pressed="' + (k === selected) + '" aria-label="' + esc(label) + '">';
+      h += '<span class="dow">' + WD[d.getUTCDay()].charAt(0) + '</span><span class="dnum"><b>' + d.getUTCDate() + '</b></span>';
+      ITEMS.forEach((it, i) => {
+        h += '<span class="cell' + (GAP_BEFORE.has(i) ? ' gap' : '') + '"><i class="bub' + (it.min ? ' m' : '') + (done[it.id] ? ' on' : '') + '"></i></span>';
+      });
+      h += '<span class="fcell">' + (md ? CHECK_SVG : '') + '</span></button>';
+    });
+    $('#grid').innerHTML = h;
+  }
+
+  function renderDay(keys, tk) {
+    const k = selected;
+    const idx = keys.indexOf(k);
+    $('#daytitle').textContent = fmtLong(k);
+    $('#todaytag').hidden = k !== tk;
+    $('#dayidx').textContent = 'Day ' + (idx + 1) + ' of ' + DAYS;
+    $('#prev').disabled = idx <= 0;
+    $('#next').disabled = idx >= DAYS - 1;
+
+    const done = state.days[k] || {};
+    const mCount = MIN_IDS.filter(id => done[id]).length;
+    const aCount = ITEMS.filter(it => done[it.id]).length;
+    $('#mindots').innerHTML = MIN_IDS.map(id => '<i' + (done[id] ? ' class="on"' : '') + '></i>').join('');
+    $('#minval').textContent = mCount + ' of ' + MIN_IDS.length;
+    $('#allval').textContent = aCount + ' of ' + ITEMS.length + ' done';
+
+    const stamp = $('#stamp');
+    const full = mCount === MIN_IDS.length;
+    stamp.hidden = !full;
+    stamp.classList.remove('stamp');
+    if (full && stampCheck && stampCheck.day === k && !stampCheck.was) {
+      void stamp.offsetWidth;
+      stamp.classList.add('stamp');
+    }
+
+    const ex = state.exams.filter(e => e.date === k);
+    const note = $('#examnote');
+    note.hidden = !ex.length;
+    note.textContent = '';
+    if (ex.length) {
+      const s = document.createElement('strong');
+      s.textContent = 'Exam day: ' + ex.map(e => e.name).join(' and ') + '.';
+      note.append(s, ' Keep your wake time, eat a protein breakfast, and walk for 10 minutes shortly before you go in. The focus boost is strongest right after. Good luck.');
+    }
+
+    const list = $('#list');
+    list.classList.toggle('no-tips', !showTips);
+    $('#tipsbtn').textContent = showTips ? 'Hide tips' : 'Show tips';
+
+    let h = '';
+    let g = null;
+    ITEMS.forEach((it, i) => {
+      if (it.g !== g) {
+        if (g !== null) h += '</div>';
+        h += '<div class="grp" role="group" aria-labelledby="g-' + i + '"><h3 id="g-' + i + '">' + esc(it.g) + '</h3>';
+        g = it.g;
+      }
+      const on = !!done[it.id];
+      const tip = typeof it.tip === 'function' ? it.tip(state) : it.tip;
+      h += '<label class="item' + (on ? ' on' : '') + (it.min ? ' m' : '') + '">'
+        + '<span class="inum" aria-hidden="true"><b>' + (i + 1) + '</b></span>'
+        + '<input type="checkbox" class="cb" data-item="' + it.id + '" data-focus-id="item-' + it.id + '"'
+        + (on ? ' checked' : '') + ' aria-labelledby="t-' + it.id + '" aria-describedby="d-' + it.id + '">'
+        + '<span class="bub big' + (on ? ' on' : '') + (on && justToggled === it.id ? ' pop' : '') + '" aria-hidden="true"></span>'
+        + '<span class="txt"><span class="ttl" id="t-' + it.id + '">' + esc(it.title(state))
+        + (it.min ? ' <span class="mtag">Minimum</span>' : '') + '</span>'
+        + '<span id="d-' + it.id + '"><span class="tip">' + esc(tip) + '</span>'
+        + '<span class="helps">Helps: ' + esc(it.helps) + '</span></span></span>'
+        + '</label>';
+    });
+    h += '</div>';
+    list.innerHTML = h;
+  }
+
+  function renderSettings() {
+    const w = $('#inwake'), b = $('#inbed'), s = $('#instart');
+    if (document.activeElement !== w) w.value = state.wake;
+    if (document.activeElement !== b) b.value = state.bed;
+    if (document.activeElement !== s) s.value = state.start;
+    const win = (toMin(state.wake) - toMin(state.bed) + 1440) % 1440;
+    const hh = Math.floor(win / 60), mm = win % 60;
+    const txt = 'That gives you ' + hh + ' h' + (mm ? ' ' + mm + ' min' : '') + ' in bed.';
+    const sn = $('#sleepnote');
+    sn.textContent = win < 420 ? txt + ' Aim for 7 to 9 hours.' : txt;
+    sn.classList.toggle('warn', win < 420);
+
+    const ul = $('#examlist');
+    ul.textContent = '';
+    if (!state.exams.length) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'No exams added yet. Added exams show up highlighted on the sheet.';
+      ul.append(li);
+    }
+    for (const e of state.exams) {
+      const li = document.createElement('li');
+      const n = document.createElement('span'); n.className = 'en'; n.textContent = e.name;
+      const d = document.createElement('span'); d.className = 'ed'; d.textContent = fmtShort(e.date);
+      const x = document.createElement('button');
+      x.type = 'button'; x.className = 'btn small'; x.textContent = 'Remove';
+      x.dataset.del = e.id; x.setAttribute('aria-label', 'Remove ' + e.name);
+      li.append(n, d, x);
+      ul.append(li);
+    }
+  }
+
+  /* ---------- events ---------- */
+  $('#grid').addEventListener('click', e => {
+    const b = e.target.closest('button.day');
+    if (!b) return;
+    selected = b.dataset.day;
+    render();
+  });
+  function step(dir) {
+    const keys = currentKeys();
+    const i = keys.indexOf(selected) + dir;
+    if (i >= 0 && i < DAYS) { selected = keys[i]; render(); }
+  }
+  $('#prev').addEventListener('click', () => step(-1));
+  $('#next').addEventListener('click', () => step(1));
+
+  $('#list').addEventListener('change', e => {
+    const cb = e.target.closest('.cb');
+    if (!cb) return;
+    stampCheck = { day: selected, was: minDone(selected) };
+    justToggled = cb.dataset.item;
+    edit({ t: 'tick', date: selected, id: cb.dataset.item, v: cb.checked });
+  });
+  $('#tipsbtn').addEventListener('click', () => { showTips = !showTips; writePref(showTips); render(); });
+
+  const setBtn = $('#setbtn'), setPanel = $('#settings');
+  function openSettings(focusExam) {
+    setPanel.hidden = false;
+    setBtn.setAttribute('aria-expanded', 'true');
+    renderSettings();
+    if (focusExam) $('#inexname').focus();
+  }
+  function closeSettings() {
+    setPanel.hidden = true;
+    setBtn.setAttribute('aria-expanded', 'false');
+    setBtn.focus();
+  }
+  setBtn.addEventListener('click', () => (setPanel.hidden ? openSettings(false) : closeSettings()));
+  $('#setdone').addEventListener('click', closeSettings);
+
+  $('#inwake').addEventListener('change', e => {
+    const m = toMin(e.target.value);
+    if (m != null && fromMin(m) !== state.wake) edit({ t: 'set', patch: { wake: fromMin(m) } });
+  });
+  $('#inbed').addEventListener('change', e => {
+    const m = toMin(e.target.value);
+    if (m != null && fromMin(m) !== state.bed) edit({ t: 'set', patch: { bed: fromMin(m) } });
+  });
+  $('#instart').addEventListener('change', e => {
+    const v = e.target.value;
+    if (isKey(v) && v !== state.start) { selected = null; edit({ t: 'set', patch: { start: v } }); }
+  });
+
+  function addExam() {
+    const n = $('#inexname'), d = $('#inexdate'), msg = $('#exammsg');
+    const name = n.value.trim();
+    if (!name) { msg.textContent = 'Type the exam name first.'; n.focus(); return; }
+    if (!isKey(d.value)) { msg.textContent = 'Pick the exam date.'; d.focus(); return; }
+    msg.textContent = '';
+    edit({ t: 'examAdd', exam: { id: uid(), name: name.slice(0, 60), date: d.value } });
+    n.value = '';
+    d.value = '';
+    n.focus();
+  }
+  $('#addexam').addEventListener('click', addExam);
+  $('#inexname').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addExam(); } });
+  $('#examlist').addEventListener('click', e => {
+    const b = e.target.closest('[data-del]');
+    if (b) edit({ t: 'examDel', id: b.dataset.del });
+  });
+
+  let armTimer = null;
+  $('#clearall').addEventListener('click', e => {
+    const b = e.currentTarget;
+    if (!b.classList.contains('armed')) {
+      b.classList.add('armed');
+      b.textContent = 'Tap again to clear every tick';
+      clearTimeout(armTimer);
+      armTimer = setTimeout(() => { b.classList.remove('armed'); b.textContent = 'Clear all ticks'; }, 4000);
+      return;
+    }
+    clearTimeout(armTimer);
+    b.classList.remove('armed');
+    b.textContent = 'Clear all ticks';
+    edit({ t: 'clear' });
+  });
+
+  function checkRollover() {
+    const tk = todayKey();
+    if (tk !== lastToday) {
+      if (selected === lastToday) selected = null;
+      lastToday = tk;
+      render();
+    }
+  }
+  setInterval(checkRollover, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkRollover(); });
+
+  render();
+  setStatus('starting');
+  connect();
+})();
+</script>
+</body>
+</html>
